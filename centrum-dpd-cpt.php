@@ -12,17 +12,32 @@
 
 require_once plugin_dir_path( __FILE__ ) . 'cpt/zespol/index.php';
 require_once plugin_dir_path( __FILE__ ) . 'cpt/oferta/index.php';
+require_once plugin_dir_path( __FILE__ ) . 'cpt/referencje/index.php';
 
-
-// .css and .js register
-// add_action('init', 'register_script');
-// function register_script() {
-//     wp_register_script( 'custom_jquery', plugins_url('/js/custom-jquery.js', __FILE__), array('jquery'), '2.5.1' );
-//     wp_register_style( 'new_style', plugins_url('/css/cpt-team.css', __FILE__), false, '1.0.0', 'all');
-// }
-
-// add_action('wp_enqueue_scripts', 'enqueue_style');
-// function enqueue_style(){
-//    wp_enqueue_script('custom_jquery');
-//    wp_enqueue_style( 'new_style' );
-// }
+add_filter( 'wpseo_breadcrumb_links', 'yoast_seo_breadcrumb_append_link' );
+  function yoast_seo_breadcrumb_append_link( $links ) {
+	global $post;
+	if ( is_singular( array( 'oferta') ) ) {
+		$breadcrumb[] = array(
+			'url' => site_url( '/oferta/' ),
+			'text' => 'Oferta',
+		);
+		array_splice( $links, 1, -2, $breadcrumb );
+	}
+    if (is_singular( array( 'zespol') )) {
+		$breadcrumb[] = array(
+			'url' => site_url( '/zespol/' ),
+			'text' => 'Zespół',
+		);
+		array_splice( $links, 1, -2, $breadcrumb );
+	}
+	 if (is_singular( array( 'referencje') )) {
+		$breadcrumb[] = array(
+			'url' => site_url( '/referencje/' ),
+			'text' => 'Referencje',
+		);
+		array_splice( $links, 1, -2, $breadcrumb );
+	}
+	return $links;
+  }
+  

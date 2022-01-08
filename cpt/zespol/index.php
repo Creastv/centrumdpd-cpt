@@ -49,3 +49,53 @@ add_action( 'init', 'crea_team_post_types' );
 // }
 // add_filter( 'single_template', 'load_team_template' );
 
+/*
+**** Register meta box(es) ****
+*/
+function crea_register_meta_boxes() {
+	add_meta_box( 'mi-meta-box-id', __( 'Dodatkowe informacje', 'crea' ), 'crea_mi_display_callback', 'zespol' );
+}
+add_action( 'add_meta_boxes', 'crea_register_meta_boxes' );
+
+/*
+**** Meta box display callback ****
+*/
+function crea_mi_display_callback( $post ) {
+	
+	$position = get_post_meta( $post->ID, 'position', true );
+	$linkiedin = get_post_meta( $post->ID, 'linkiedin', true );
+	$phone = get_post_meta( $post->ID, 'phone', true );
+	$email = get_post_meta( $post->ID, 'email', true );
+
+	wp_nonce_field( 'mi_meta_box_nonce', 'meta_box_nonce' );
+
+	echo '<p><label for="position_label">Work position</label> <input type="text" name="position" id="position" value="'. $position .'" /></p>';
+	echo '<p><label for="linkiedin_label">Linkiedin</label> <input type="text" name="linkiedin" id="linkiedin" value="'. $linkiedin .'" /></p>';
+	echo '<p><label for="phone_label">Phone No:</label> <input type="text" name="phone" id="phone" value="'. $phone .'" /></p>';
+	echo '<p><label for="email_label">E-mail:</label> <input type="text" name="email" id="email" value="'. $email .'" /></p>';
+}
+
+/*
+**** Save meta box content ****
+*/
+function crea_save_meta_box( $post_id ) {
+
+	if( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
+
+	if( !isset( $_POST['meta_box_nonce'] ) || !wp_verify_nonce( $_POST['meta_box_nonce'], 'mi_meta_box_nonce' ) ) return;
+
+	if( !current_user_can( 'edit_post' ) ) return;
+
+	if( isset( $_POST['position'] ) )
+	update_post_meta( $post_id, 'position', $_POST['position'] );
+
+	if( isset( $_POST['linkiedin'] ) )
+	update_post_meta( $post_id, 'linkiedin', $_POST['linkiedin'] );
+
+	if( isset( $_POST['phone'] ) )
+	update_post_meta( $post_id, 'phone', $_POST['phone'] );
+
+	if( isset( $_POST['email'] ) )
+	update_post_meta( $post_id, 'email', $_POST['email'] );
+}
+add_action( 'save_post', 'crea_save_meta_box' );
